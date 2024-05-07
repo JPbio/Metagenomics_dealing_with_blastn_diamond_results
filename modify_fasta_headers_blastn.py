@@ -1,3 +1,5 @@
+# by JPbio  & ChatGPT 3.5
+
 import sys
 
 def print_help():
@@ -31,19 +33,22 @@ def modify_fasta_headers(blast_results_file, fasta_file, output_file):
     # Modify the FASTA headers based on BLAST results
     with open(fasta_file) as f:
         with open(output_file, "w") as out_f:
+            skip_sequence = False  # Flag to skip sequence
             for line in f:
                 if line.startswith(">"):  # If line is a header line
                     header = line.strip()[1:]  # Remove ">" from the header
                     header_parts = header.split()
                     contig_id = header_parts[0]  # Extract contig ID from the header
                     if contig_id in blast_results:  # If contig ID is present in the BLAST results
+                        skip_sequence = False  # Reset flag to skip sequence
                         # Construct new header with contig ID, subject ID, and column 17 separated by tabs
                         new_header = ">bN_{}\t{}\t{}\n".format(contig_id, blast_results[contig_id][0], blast_results[contig_id][1])
                         out_f.write(new_header)  # Write the new header to the output file
                     else:
-                        out_f.write(line)  # Write the original header if no match found in BLAST results
+                        skip_sequence = True  # Set flag to skip sequence
                 else:
-                    out_f.write(line)  # Write sequence lines as they are
+                    if not skip_sequence:  # If flag to skip sequence is not set
+                        out_f.write(line)  # Write sequence lines as they are
 
     print("Header modification completed!")  # Print completion message
 

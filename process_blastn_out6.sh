@@ -50,34 +50,34 @@ if [ -z "$fasta_file" ] || [ -z "$blastn_tab_file" ]; then
 fi
 
 # Filter all viral hits
-grep -i "virus" "$blastn_tab_file" > viral_input_blastn.tab
+grep -i "virus" "$blastn_tab_file" > viral_AllHits_blastn.tab
 
 # Filter all nonviral hits
-grep -v -i "virus" "$blastn_tab_file" > nonviral_input_blastn.tab
+grep -v -i "virus" "$blastn_tab_file" > nonviral_AllHits_blastn.tab
 
 # Filter the top best hits for each contig based on the first occurrence
-awk '!seen[$1]++' "$blastn_tab_file" > BestHits_input_blastn.tab
+awk '!seen[$1]++' "$blastn_tab_file" > BestHits_blastn.tab
 
 # Filter the top viral hits
-grep -i "virus" BestHits_input_blastn.tab > viral_BestHits_input_blastn.tab
+grep -i "virus" BestHits_blastn.tab > viral_BestHits_blastn.tab
 
 # Filter the top nonviral hits
-grep -v -i "virus" BestHits_input_blastn.tab > nonviral_BestHits_input_blastn.tab
+grep -v -i "virus" BestHits_blastn.tab > nonviral_BestHits_blastn.tab
 
 # Add header to the tabular blastn results
 header="qseqid\tqlen\tqstart\tqend\tlength\tsseqid\tslen\tsstart\tsend\tpident\tqcovs\tevalue\tbitscore\tframes\tsframe\tsstrand\tstitle\tstaxid\tssciname\tsblastname\tsskingdom"
 for file in *blastn*.tab; do
     # Prepend the header to the file
-    echo -e "$header" | cat - "$file" > temp && mv temp "$file"   
+    echo -e "$header" | cat - "$file" > temp && mv temp "$file"
 done < <(yes "yes")
 
 # Hit-based strand correction
 
 # Get the contigs to be inverted
-grep -A1 -f <(awk -F'\t' '$15 < 0' BestHits_input_blastn.tab | cut -f1)  "$fasta_file" | grep -v ^-- > Neg_strand_input.fasta
+grep -A1 -f <(awk -F'\t' '$15 < 0' BestHits_blastn.tab | cut -f1)  "$fasta_file" | grep -v ^-- > Neg_strand_input.fasta
 
 # Filter the contigs that are already strand correct
-grep -A1 -f <(comm -13 <(awk -F'\t' '$15 < 0' BestHits_input_blastn.tab | cut -f1 | sort) <(cut -f1 BestHits_input_blastn.tab | sort) | grep -v ^"qseqid") "$fasta_file" | grep -v ^-- > Pos_strand_input.fasta
+grep -A1 -f <(comm -13 <(awk -F'\t' '$15 < 0' BestHits_blastn.tab | cut -f1 | sort) <(cut -f1 BestHits_blastn.tab | sort) | grep -v ^"qseqid") "$fasta_file" | grep -v ^-- > Pos_strand_input.fasta
 
 # Get reverse-complement of negative strand hits
 fastx_reverse_complement -i Neg_strand_input.fasta -o revcomp_Neg_strand_input.fasta
@@ -89,10 +89,10 @@ rm -f Pos_strand_input.fasta
 rm -f revcomp_Neg_strand_input.fasta
 
 # Filter the unaligned sequences for the next steps
-grep -v -f <(cut -f1 BestHits_input_blastn.tab | sort | uniq) <(grep ">" "$fasta_file" | cut -f1 -d " ") > aux_unaligned_blastn.txt
+grep -v -f <(cut -f1 BestHits_blastn.tab | sort | uniq) <(grep ">" "$fasta_file" | cut -f1 -d " ") > aux_unaligned_blastn.txt
 grep -A1 -f aux_unaligned_blastn.txt "$fasta_file" | grep -v ^-- > contigs_unaligned_blastn.fasta
 rm -f aux_unaligned_blastn.txt
 
 # Add information of the best hits to the headers of viral and nonvial blasnt contigs
-python modify_fasta_headers_blastn.py viral_BestHits_input_blastn.tab contigs_gt200_correct_strand.fasta contigs_viral_BestHits_blastn.fasta
-python modify_fasta_headers_blastn.py nonviral_BestHits_input_blastn.tab contigs_gt200_correct_strand.fasta contigs_nonviral_BestHits_blastn.fasta
+python modify_fasta_headers_blastn.py viral_BestHits_blastn.tab contigs_gt200_correct_strand.fasta contigs_viral_BestHits_blastn.fasta
+python modify_fasta_headers_blastn.py nonviral_BestHits_blastn.tab contigs_gt200_correct_strand.fasta contigs_nonviral_BestHits_blastn.fasta

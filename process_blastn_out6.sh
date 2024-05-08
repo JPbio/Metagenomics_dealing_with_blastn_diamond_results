@@ -118,3 +118,12 @@ rm -f aux_unaligned_blastn.txt
 # Add information of the best hits to the headers of viral and nonvial blasnt contigs
 python modify_fasta_headers_blastn.py viral_BestHits_blastn.tab contigs_gt200_correct_strand.fasta contigs_viral_BestHits_blastn.fasta
 python modify_fasta_headers_blastn.py nonviral_BestHits_blastn.tab contigs_gt200_correct_strand.fasta contigs_nonviral_BestHits_blastn.fasta
+
+# add the prefix "bN" to all contigs IDs
+
+for file in *tab; do
+    sed -i '/^qseqid/! s/^/bN_/' "$file"
+done
+
+#### END
+

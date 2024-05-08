@@ -68,17 +68,17 @@ awk -v blastn_tab="$blastn_tab_file" '
             print $0
         }
     }
-' ranks_taxids_blast.tab "$blastn_tab_file" > blastN_gt200_AllHits_outfmt6_TAX.tab 
+' ranks_taxids_blast.tab "$blastn_tab_file" > blastn_gt200_AllHits_outfmt6_TAX.tab 
 
 
 # Filter all viral hits
-awk -F'\t' '$27 == "Viruses"' blastN_gt200_AllHits_outfmt6_TAX.tab > viral_AllHits_blastn.tab
+awk -F'\t' '$27 == "Viruses"' blastn_gt200_AllHits_outfmt6_TAX.tab > viral_AllHits_blastn.tab
 
 # Filter all nonviral hits
-awk -F'\t' '$27 != "Viruses"' blastN_gt200_AllHits_outfmt6_TAX.tab > nonviral_AllHits_blastn.tab
+awk -F'\t' '$27 != "Viruses"' blastn_gt200_AllHits_outfmt6_TAX.tab > nonviral_AllHits_blastn.tab
 
 # Filter the top best hits for each contig based on the first occurrence
-awk '!seen[$1]++' blastN_gt200_AllHits_outfmt6_TAX.tab  > BestHits_blastn.tab
+awk '!seen[$1]++' blastn_gt200_AllHits_outfmt6_TAX.tab  > BestHits_blastn.tab
 
 # Filter the top viral hits
 awk -F'\t' '$27 == "Viruses"' BestHits_blastn.tab > viral_BestHits_blastn.tab

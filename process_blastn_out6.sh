@@ -49,23 +49,45 @@ if [ -z "$fasta_file" ] || [ -z "$blastn_tab_file" ]; then
     print_help
 fi
 
+#Get list od Taxids
+cut -f 18 "$blastn_tab_file" | sort | uniq > uniq_taxids_blastn.txt 
+
+#Get Ranks taxons information for each TaxID
+python extract_taxonomic_ranks.py uniq_taxids_blastn.txt ranks_taxids_blast.tab
+rm -f uniq_taxids_blastn.txt
+
+#Appending the taxonomy information to the tabular blast result
+awk -v blastn_tab="$blastn_tab_file" '
+    BEGIN{FS=OFS="\t"}
+    FNR==NR{test_out[$1]=$0; next}
+    {
+        if ($18 in test_out) {
+            split(test_out[$18], fields, "\t")
+            printf "%s%s%s\n", $0, OFS, substr(test_out[$18], length(fields[1]) + 2)
+        } else {
+            print $0
+        }
+    }
+' ranks_taxids_blast.tab "$blastn_tab_file" > blastN_gt200_AllHits_outfmt6_TAX.tab 
+
+
 # Filter all viral hits
-grep -i "virus" "$blastn_tab_file" > viral_AllHits_blastn.tab
+awk -F'\t' '$27 == "Viruses"' blastN_gt200_AllHits_outfmt6_TAX.tab > viral_AllHits_blastn.tab
 
 # Filter all nonviral hits
-grep -v -i "virus" "$blastn_tab_file" > nonviral_AllHits_blastn.tab
+awk -F'\t' '$27 != "Viruses"' blastN_gt200_AllHits_outfmt6_TAX.tab > nonviral_AllHits_blastn.tab
 
 # Filter the top best hits for each contig based on the first occurrence
-awk '!seen[$1]++' "$blastn_tab_file" > BestHits_blastn.tab
+awk '!seen[$1]++' blastN_gt200_AllHits_outfmt6_TAX.tab  > BestHits_blastn.tab
 
 # Filter the top viral hits
-grep -i "virus" BestHits_blastn.tab > viral_BestHits_blastn.tab
+awk -F'\t' '$27 == "Viruses"' BestHits_blastn.tab > viral_BestHits_blastn.tab
 
 # Filter the top nonviral hits
-grep -v -i "virus" BestHits_blastn.tab > nonviral_BestHits_blastn.tab
+awk -F'\t' '$27 != "Viruses"' BestHits_blastn.tab > nonviral_BestHits_blastn.tab
 
 # Add header to the tabular blastn results
-header="qseqid\tqlen\tqstart\tqend\tlength\tsseqid\tslen\tsstart\tsend\tpident\tqcovs\tevalue\tbitscore\tframes\tsframe\tsstrand\tstitle\tstaxid"
+header="qseqid\tqlen\tqstart\tqend\tlength\tsseqid\tslen\tsstart\tsend\tpident\tqcovs\tevalue\tbitscore\tframes\tsframe\tsstrand\tstitle\tstaxid\tTax_name\tSpecies\tGenus\tFamily\tOrder\tClass\tPhylum\tKingdom\tSuperkingdom"
 for file in *blastn*.tab; do
     # Prepend the header to the file
     echo -e "$header" | cat - "$file" > temp && mv temp "$file"

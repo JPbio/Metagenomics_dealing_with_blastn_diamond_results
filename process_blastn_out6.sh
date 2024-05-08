@@ -65,7 +65,7 @@ grep -i "virus" BestHits_blastn.tab > viral_BestHits_blastn.tab
 grep -v -i "virus" BestHits_blastn.tab > nonviral_BestHits_blastn.tab
 
 # Add header to the tabular blastn results
-header="qseqid\tqlen\tqstart\tqend\tlength\tsseqid\tslen\tsstart\tsend\tpident\tqcovs\tevalue\tbitscore\tframes\tsframe\tsstrand\tstitle\tstaxid\tssciname\tsblastname\tsskingdom"
+header="qseqid\tqlen\tqstart\tqend\tlength\tsseqid\tslen\tsstart\tsend\tpident\tqcovs\tevalue\tbitscore\tframes\tsframe\tsstrand\tstitle\tstaxid"
 for file in *blastn*.tab; do
     # Prepend the header to the file
     echo -e "$header" | cat - "$file" > temp && mv temp "$file"

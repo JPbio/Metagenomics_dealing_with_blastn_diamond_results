@@ -122,7 +122,7 @@ python modify_fasta_headers_blastn.py nonviral_BestHits_blastn.tab contigs_gt200
 # add the prefix "bN" to all contigs IDs
 
 for file in *tab; do
-    if [[ ! $file =~ ^worls ]]; then
+    if [[ ! $file =~ ^rank ]]; then
         sed -i '/^qseqid/! s/^/bN_/' "$file"
     fi
 done

@@ -41,7 +41,7 @@ def modify_fasta_headers(blast_results_file, fasta_file, output_file, append_so)
                     if contig_id in blast_results:  # If contig ID is present in the BLAST results
                         skip_sequence = False  # Reset flag to skip sequence
                         # Construct new header with contig ID, subject ID, and column 17 separated by tabs
-                        new_header = ">{}\t{}\t{}\t{}\n".format(append_so, contig_id, blast_results[contig_id][0], blast_results[contig_id][1])
+                        new_header = ">{}{}\t{}\t{}\n".format(append_so, contig_id, blast_results[contig_id][0], blast_results[contig_id][1])
                         out_f.write(new_header)  # Write the new header to the output file
                     else:
                         skip_sequence = True  # Set flag to skip sequence

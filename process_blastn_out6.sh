@@ -106,7 +106,7 @@ fastx_reverse_complement -i Neg_strand_input.fasta -o revcomp_Neg_strand_input.f
 rm -f Neg_strand_input.fasta
 
 # Merge the corrected contigs for the final fasta of blast hits
-cat Pos_strand_input.fasta revcomp_Neg_strand_input.fasta > contigs_gt200_correct_strand.fasta
+cat Pos_strand_input.fasta revcomp_Neg_strand_input.fasta > contigs_gt200_blastn_correct_strand.fasta
 rm -f Pos_strand_input.fasta
 rm -f revcomp_Neg_strand_input.fasta
 
@@ -116,8 +116,8 @@ grep -A1 -f aux_unaligned_blastn.txt "$fasta_file" | grep -v ^-- > contigs_unali
 rm -f aux_unaligned_blastn.txt
 
 # Add information of the best hits to the headers of viral and nonvial blasnt contigs
-python modify_fasta_headers_blastn.py viral_BestHits_blastn.tab contigs_gt200_correct_strand.fasta contigs_viral_BestHits_blastn.fasta
-python modify_fasta_headers_blastn.py nonviral_BestHits_blastn.tab contigs_gt200_correct_strand.fasta contigs_nonviral_BestHits_blastn.fasta
+python modify_fasta_headers_blastn.py viral_BestHits_blastn.tab contigs_gt200_blastn_correct_strand.fasta contigs_viral_BestHits_blastn.fasta
+python modify_fasta_headers_blastn.py nonviral_BestHits_blastn.tab contigs_gt200_blastn_correct_strand.fasta contigs_nonviral_BestHits_blastn.fasta
 
 # add the prefix "bN" to all contigs IDs
 

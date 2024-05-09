@@ -50,7 +50,7 @@ if [ -z "$fasta_file" ] || [ -z "$diamond_tab_file" ]; then
 fi
 
 #Get list od Taxids
-cut -f 18 "$diamond_tab_file" | cut -1 -d ";" | sort | uniq > uniq_taxids_diamond.txt #Here I'm getting only the first Taxid separated by ";". Not sure if it could have implications in the interpretability,need think more about it and maybe deal with it.
+cut -f 18 "$diamond_tab_file" | cut -f 1 -d ";" | sort | uniq > uniq_taxids_diamond.txt #Here I'm getting only the first Taxid separated by ";". Not sure if it could have implications in the interpretability,need think more about it and maybe deal with it.
 
 #Get Ranks taxons information for each TaxID
 python extract_taxonomic_ranks.py uniq_taxids_diamond.txt ranks_taxids_diamond.tab

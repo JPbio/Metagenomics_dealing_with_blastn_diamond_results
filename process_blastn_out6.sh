@@ -116,12 +116,12 @@ grep -A1 -f aux_unaligned_blastn.txt "$fasta_file" | grep -v ^-- > contigs_unali
 rm -f aux_unaligned_blastn.txt
 
 # Add information of the best hits to the headers of viral and nonvial blasnt contigs
-python modify_fasta_headers_blastn.py viral_BestHits_blastn.tab contigs_gt200_blastn_correct_strand.fasta contigs_viral_BestHits_blastn.fasta
-python modify_fasta_headers_blastn.py nonviral_BestHits_blastn.tab contigs_gt200_blastn_correct_strand.fasta contigs_nonviral_BestHits_blastn.fasta
+python modify_fasta_headers_blastn_and_DMD.py viral_BestHits_blastn.tab contigs_gt200_blastn_correct_strand.fasta contigs_viral_BestHits_blastn.fasta bN_
+python modify_fasta_headers_blastn_and_DMD.py nonviral_BestHits_blastn.tab contigs_gt200_blastn_correct_strand.fasta contigs_nonviral_BestHits_blastn.fasta bN_
 
 # add the prefix "bN" to all contigs IDs
 
-for file in *tab; do
+for file in *blastn*tab; do
     if [[ ! $file =~ ^rank ]]; then
         sed -i '/^qseqid/! s/^/bN_/' "$file"
     fi

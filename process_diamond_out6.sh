@@ -57,11 +57,11 @@ python extract_taxonomic_ranks.py uniq_taxids_diamond.txt ranks_taxids_diamond.t
 rm -f uniq_taxids_diamond.txt
 
 #keeping only one taxid per hit in the tabular result
-diamond_tab_file=$(awk -F'\t' '{split($18, arr, ";"); $18 = arr[1]; for (i = 1; i <= NF; i++) printf "%s%s", $i, (i == NF ? "\n" : "\t")}' <<< "$diamond_tab_file")
+awk -F'\t' '{split($18, arr, ";"); $18 = arr[1]; for (i = 1; i <= NF; i++) printf "%s%s", $i, (i == NF ? "\n" : "\t")}'  "$diamond_tab_file" > temp_diamond.tab
 
 
 #Appending the taxonomy information to the tabular blast result
-awk -v diamond_tab="$diamond_tab_file" '
+awk '
     BEGIN{FS=OFS="\t"}
     FNR==NR{test_out[$1]=$0; next}
     {
@@ -72,7 +72,9 @@ awk -v diamond_tab="$diamond_tab_file" '
             print $0
         }
     }
-' ranks_taxids_diamond.tab "$diamond_tab_file" > diamond_gt200_AllHits_outfmt6_TAX.tab
+' ranks_taxids_diamond.tab "temp_diamond.tab" > diamond_gt200_AllHits_outfmt6_TAX.tab
+
+rm -f temp_diamond.tab
 
 
 # Filter all viral hits
@@ -90,16 +92,20 @@ awk -F'\t' '$27 == "Viruses"' BestHits_diamond.tab > viral_BestHits_diamond.tab
 # Filter the top nonviral hits
 awk -F'\t' '$27 != "Viruses"' BestHits_diamond.tab > nonviral_BestHits_diamond.tab
 
-# Add header to the tabular blastn results
+# Add header to the tabular diamond results
 header="qseqid\tqlen\tqstart\tqend\tqcovhsp\tlength\tsseqid\tslen\tsstart\tsend\tscovhsp\tpident\tevalue\tbitscore\tqstrand\tqframe\tstitle\tstaxid\tTax_name\tSpecies\tGenus\tFamily\tOrder\tClass\tPhylum\tKingdom\tSuperkingdom"
 for file in *diamond*.tab; do
-    # Prepend the header to the file
-    echo -e "$header" | cat - "$file" > temp && mv temp "$file"
+    # Check if the filename starts with "rank"
+    if [[ ! "$file" =~ ^rank ]]; then
+        # Prepend the header to the file
+        echo -e "$header" | cat - "$file" > temp && mv temp "$file"
+    fi
 done < <(yes "yes")
+
 
 #Linearizing diamond fasta outputs
 fasta_formatter -i diamond_aligned.fasta  -o diamond_aligned_linear.fasta
-rm -f diamond_aligned.fasta 
+rm -f diamond_aligned.fasta
 fasta_formatter -i diamond_unaligned.fasta  -o contigs_nohits_FINAL_diamond.fasta #Final contigs without similarity: "dark matter"
 rm -f diamond_unaligned.fasta
 

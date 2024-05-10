@@ -72,7 +72,7 @@ awk -v diamond_tab="$diamond_tab_file" '
             print $0
         }
     }
-' ranks_taxids_diamond.tab "diamond_tab_file" > diamond_gt200_AllHits_outfmt6_TAX.tab 
+' ranks_taxids_diamond.tab "$diamond_tab_file" > diamond_gt200_AllHits_outfmt6_TAX.tab
 
 
 # Filter all viral hits

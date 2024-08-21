@@ -119,7 +119,10 @@ grep -A1 -f <(awk -F'\t' '$16 < 0' BestHits_diamond.tab | cut -f1)  diamond_alig
 grep -A1 -f <(comm -13 <(awk -F'\t' '$16 < 0' BestHits_diamond.tab | cut -f1 | sort) <(cut -f1 BestHits_diamond.tab | sort) | grep -v ^"qseqid") diamond_aligned_linear.fasta | grep -v ^-- > Pos_strand_input.fasta
 
 # Get reverse-complement of negative strand hits
-fastx_reverse_complement -i Neg_strand_input.fasta -o revcomp_Neg_strand_input.fasta
+# CAUTION! fastx_reverse_complemen does not process lowercase letters in the sequence. I need to chose another way to reverse complement 
+#for now, I'll just fix the lowercase nucleotides with an aws command, probably a lazy solution, but worked for now
+#fastx_reverse_complement -i Neg_strand_input.fasta -o revcomp_Neg_strand_input.fasta
+awk '/^>/ {print; next} {print toupper($0)}' Neg_strand_input.fasta | fastx_reverse_complement -o revcomp_Neg_strand_input.fasta
 rm -f Neg_strand_input.fasta
 
 # Merge the corrected contigs for the final fasta of blast hits

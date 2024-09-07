@@ -17,10 +17,12 @@
   3 Download the Taxonomy database from which we will extract the Ranks informatios
 
     wget https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.gz
+    tar -xzvf new_taxdump.tar.gz
       
   4 Download DIAMOND executable file (check for more recent versions on their github before)
 
     wget http://github.com/bbuchfink/diamond/releases/download/v2.1.9/diamond-linux64.tar.gz
+    tar -xzvf diamond-linux64.tar.gz
 
   5 Formatting the database using the Taxonomy DB files
 

@@ -5,6 +5,7 @@
   1 Download the nr database
   
     wget https://ftp.ncbi.nlm.nih.gov/blast/db/FASTA/nr.gz
+    pigz -d -p <number of threads> nr_cluster.fasta.gz #you can just use gunzip. but without paralelazing it will take a while
    
   2 Download the Taxonomy data from NCBI (you'll need both)
 

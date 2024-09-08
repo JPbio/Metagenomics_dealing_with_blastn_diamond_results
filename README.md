@@ -30,7 +30,8 @@
     ./diamond makedb --in nr.gz --taxonnodes nodes.dmp --taxonnames names.dmp --taxonmap prot.accession2taxid.FULL -d nr_tax
 
   6- Running DIAMOND against tth entire NR indexed with taxonomy info and generating a tabular result
-    ./diamond blastx -q teste.fasta -d nr_tax.dmnd -k 10 -p 31 -e 0.001 -f 6 qseqid qlen qstart qend qcovhsp length sseqid slen sstart send scovhsp pident evalue bitscore qstrand qframe stitle staxids -c 1 -b 20 --very-sensitive -o teste_out --al dmnd_hits.fasta --alfmt fasta 2> dmnd_log
+  
+    ./diamond blastx -q teste.fasta -d nr_tax.dmnd -k 10 -p 31 -e 0.001 -f 6 qseqid qlen qstart qend qcovhsp length sseqid slen sstart send scovhsp pident evalue bitscore qstrand qframe stitle staxids -c 1 -b 20 --very-sensitive -o teste_hits_out.tab --al teste_aligned.fasta --alfmt fasta  --un teste_unaligned.fasta --unfmt fasta 2> teste_dmnd.log
     
 
 

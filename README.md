@@ -46,6 +46,19 @@
 
     ./diamond makedb --in nr.gz --taxonnodes nodes.dmp --taxonnames names.dmp --taxonmap prot.accession2taxid.FULL -d nr_tax
 
+    #If you have abundant computational resoutces (Storage, memory and processing) you can add these parameters
+    mkdir -p /fast2/tmp_diamond # I have and 2TB ssd for it
+
+    diamond makedb \
+    --in refseq_protein.fasta \
+    -d refseq_protein_tax \
+    --taxonnodes nodes.dmp \
+    --taxonnames names.dmp \
+    --taxonmap prot.accession2taxid.FULL \
+    --threads 80 \
+    --tmpdir /fast2/tmp_diamond \ #ssd to speed up the process
+   
+
   6- Running DIAMOND against tth entire NR indexed with taxonomy info and generating a tabular result
   
     ./diamond blastx -q teste.fasta -d nr_tax.dmnd -k 10 -p 31 -e 0.001 -f 6 qseqid qlen qstart qend qcovhsp length sseqid slen sstart send scovhsp pident evalue bitscore qstrand qframe stitle staxids -c 1 -b 20 --very-sensitive -o teste_hits_out.tab --al teste_aligned.fasta --alfmt fasta  --un teste_unaligned.fasta --unfmt fasta 2> teste_dmnd.log
